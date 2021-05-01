@@ -1,0 +1,36 @@
+on:
+  push:
+  schedule:
+    # Every day at 1:02 UTC: https://crontab.guru/#2_1_*_*_*
+    - cron: "2 1 * * *"
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 10
+
+      - uses: actions/checkout@v2
+        with:
+          repository: futureware-tech/delern-database-backup
+          token: ${{ secrets.DATABASE_BACKUP_GITHUB_TOKEN }}
+          path: database-storage
+      - run: |
+          npx firebase-tools \
+            --project "${PROJECT?}" \
+            database:get / > database.unpretty.json
+
+          jq --sort-keys . < database.unpretty.json > \
+            database-storage/database.json
+        env:
+          PROJECT: delern-e1b33
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Automatic Realtime Database backup"
+          repository: database-storage
