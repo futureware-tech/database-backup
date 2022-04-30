@@ -34,3 +34,5 @@ jobs:
         with:
           commit_message: "Automatic Realtime Database backup"
           repository: database-storage
+
+      - uses: gautamkrishnar/keepalive-workflow@master
