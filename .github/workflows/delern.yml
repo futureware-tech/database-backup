@@ -22,10 +22,7 @@ jobs:
       - run: |
           npx firebase-tools \
             --project "${PROJECT?}" \
-            database:get / > database.unpretty.json
-
-          jq --sort-keys . < database.unpretty.json > \
-            database-storage/database.json
+            database:get / | gzip > database-storage/database.json.gz
         env:
           PROJECT: delern-e1b33
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
