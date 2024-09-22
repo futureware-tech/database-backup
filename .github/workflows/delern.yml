@@ -20,12 +20,14 @@ jobs:
           token: ${{ secrets.DATABASE_BACKUP_GITHUB_TOKEN }}
           path: database-storage
       - run: |
+          export GOOGLE_APPLICATION_CREDENTIALS="${HOME?}/.google_application_credentials.json" &&
+          echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_DATA_DELERN }}' | \
+            base64 -d > "${GOOGLE_APPLICATION_CREDENTIALS?}" &&
           npx firebase-tools \
             --project "${PROJECT?}" \
             database:get / | gzip > database-storage/database.json.gz
         env:
           PROJECT: delern-e1b33
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
